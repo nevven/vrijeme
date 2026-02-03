@@ -101,7 +101,7 @@ def fetch_summary():
         dt = datetime.fromisoformat(date_str)
         day_label = f"{day_names[dt.weekday()]} {dt.strftime('%d.%m')}"
 
-        if dt.date() == datetime.now().date():
+        if dt.weekday() >= 5:  # Weekend
             day_labels.append(f'[green]{day_label}[/green]')
         else:
             day_labels.append(day_label)
@@ -158,13 +158,12 @@ def fetch_daily(days):
 
         dt = datetime.fromisoformat(time_response[start])
         day_label = day_names[dt.weekday()]
-        is_today = dt.date() == datetime.now().date()
 
         # Time row
         time_display = [datetime.fromisoformat(t).strftime('%H:%M') for t in day_times]
 
-        # First column is day label
-        if is_today:
+        # First column is day label (weekend in green)
+        if dt.weekday() >= 5:
             day_col = f'[green]{day_label}[/green]'
         else:
             day_col = day_label
