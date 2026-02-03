@@ -114,9 +114,9 @@ def fetch_summary():
         rain = precipitation[i]
         color = get_precip_color(rain)
         if color:
-            precip_display.append(f'[{color}]{rain}mm[/{color}]')
+            precip_display.append(f'[{color}]{rain:.1f}mm[/{color}]')
         else:
-            precip_display.append(f'{rain}mm')
+            precip_display.append(f'{rain:.1f}mm')
 
     table = Table(show_header=False, border_style="grey54", show_lines=True, box=box.ROUNDED)
     table.add_row(*day_labels)
@@ -176,9 +176,9 @@ def fetch_daily(days):
         for p in day_precip:
             color = get_precip_color(p)
             if color:
-                precip_display.append(f'[{color}]{p}mm[/{color}]')
+                precip_display.append(f'[{color}]{p:.1f}mm[/{color}]')
             else:
-                precip_display.append(f'{p}mm')
+                precip_display.append(f'{p:.1f}mm')
 
         table = Table(show_header=False, border_style="grey54", show_lines=True, box=box.ROUNDED)
         table.add_row(day_col, *time_display)
