@@ -109,7 +109,7 @@ def fetch_summary():
         lo = round(temp_min[i])
         hi_color = get_temp_color(hi)
         lo_color = get_temp_color(lo)
-        temp_display.append(f'[{lo_color}]{lo}°[/{lo_color}][white]|[/white][{hi_color}]{hi}°[/{hi_color}]')
+        temp_display.append(f'[{lo_color}]{lo}°[/{lo_color}][white] | [/white][{hi_color}]{hi}°[/{hi_color}]')
 
         rain = precipitation[i]
         color = get_precip_color(rain)
@@ -119,6 +119,8 @@ def fetch_summary():
             precip_display.append(f'{rain:.1f}mm')
 
     table = Table(show_header=False, border_style="grey54", show_lines=True, box=box.ROUNDED)
+    for _ in range(7):
+        table.add_column(justify="center")
     table.add_row(*day_labels)
     table.add_row(*temp_display)
     table.add_row(*precip_display)
