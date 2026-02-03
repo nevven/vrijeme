@@ -93,8 +93,7 @@ def fetch_summary():
     day_names = {0: 'Pon', 1: 'Uto', 2: 'Sri', 3: 'Čet', 4: 'Pet', 5: 'Sub', 6: 'Ned'}
 
     day_labels = []
-    max_colored = []
-    min_colored = []
+    temp_display = []
     precip_display = []
 
     for i, date_str in enumerate(dates):
@@ -108,8 +107,9 @@ def fetch_summary():
 
         hi = round(temp_max[i])
         lo = round(temp_min[i])
-        max_colored.append(f'[{get_temp_color(hi)}]{hi}°[/{get_temp_color(hi)}]')
-        min_colored.append(f'[{get_temp_color(lo)}]{lo}°[/{get_temp_color(lo)}]')
+        hi_color = get_temp_color(hi)
+        lo_color = get_temp_color(lo)
+        temp_display.append(f'[{lo_color}]{lo}°[/{lo_color}][white]|[/white][{hi_color}]{hi}°[/{hi_color}]')
 
         rain = precipitation[i]
         color = get_precip_color(rain)
@@ -120,8 +120,7 @@ def fetch_summary():
 
     table = Table(show_header=False, border_style="grey54", show_lines=True, box=box.ROUNDED)
     table.add_row(*day_labels)
-    table.add_row(*max_colored)
-    table.add_row(*min_colored)
+    table.add_row(*temp_display)
     table.add_row(*precip_display)
 
     console.print(table)
