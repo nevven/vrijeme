@@ -99,7 +99,7 @@ def fetch_summary():
 
     for i, date_str in enumerate(dates):
         dt = datetime.fromisoformat(date_str)
-        day_label = day_names[dt.weekday()]
+        day_label = f"{day_names[dt.weekday()]} {dt.strftime('%d.%m')}"
 
         if dt.date() == datetime.now().date():
             day_labels.append(f'[green]{day_label}[/green]')
