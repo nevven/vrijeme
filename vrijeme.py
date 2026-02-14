@@ -6,7 +6,7 @@ from rich.console import Console
 from rich import box
 from shared import (
     BASE_URL, LATITUDE, LONGITUDE, TIMEZONE,
-    weather_codes, get_temp_color, get_humidity_color,
+    weather_codes, weather_icons, get_temp_color,
 )
 
 console = Console()
@@ -31,7 +31,7 @@ def fetch_hourly():
         'longitude': LONGITUDE,
         'timezone': TIMEZONE,
         'forecast_days': 1,
-        'hourly': ['temperature_2m', 'relative_humidity_2m'],
+        'hourly': ['temperature_2m', 'weather_code'],
     }
 
     response = requests.get(BASE_URL, params=params)
@@ -39,13 +39,13 @@ def fetch_hourly():
 
     time_response = data['hourly']['time']
     temp_response = data['hourly']['temperature_2m']
-    humidity_response = data['hourly']['relative_humidity_2m']
+    code_response = data['hourly']['weather_code']
 
     # Every other hour
     time_even_display = [datetime.fromisoformat(i).strftime('%H:%M') for i in time_response[::2]]
     time_even_dt = [datetime.fromisoformat(i) for i in time_response[::2]]
     temp_even = [round(i) for i in temp_response[::2]]
-    hum_even = [i for i in humidity_response[::2]]
+    icons_even = [weather_icons[c] for c in code_response[::2]]
 
     # Highlight closest time slot
     now = datetime.now()
@@ -54,12 +54,11 @@ def fetch_hourly():
 
     # Color code values
     temp_color = [f'[{get_temp_color(t)}]{t}°[/{get_temp_color(t)}]' for t in temp_even]
-    hum_colored = [f'[{get_humidity_color(h)}]{h}%[/{get_humidity_color(h)}]' for h in hum_even]
 
     table = Table(show_header=False, border_style="grey54", show_lines=True, box=box.ROUNDED)
     table.add_row(*time_display)
     table.add_row(*temp_color)
-    table.add_row(*hum_colored)
+    table.add_row(*icons_even)
 
     console.print(table)
 
