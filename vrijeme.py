@@ -6,7 +6,7 @@ from rich.console import Console
 from rich import box
 from shared import (
     BASE_URL, LATITUDE, LONGITUDE, TIMEZONE,
-    weather_codes, weather_icons, get_temp_color,
+    weather_icons, get_temp_color,
 )
 
 console = Console()
