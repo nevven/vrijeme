@@ -106,3 +106,16 @@ def get_humidity_color(humidity: int) -> str:
         return "deep_sky_blue1"
     else:
         return "bright_cyan"
+
+
+def get_wind_color(speed: float) -> str:
+    if speed >= 60:
+        return "red"
+    elif speed >= 40:
+        return "orange3"
+    elif speed >= 25:
+        return "yellow"
+    elif speed >= 10:
+        return "green"
+    else:
+        return "cyan"
