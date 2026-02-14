@@ -136,7 +136,7 @@ def fetch_daily(days):
         'longitude': LONGITUDE,
         'timezone': TIMEZONE,
         'forecast_days': days,
-        'hourly': ['temperature_2m', 'precipitation'],
+        'hourly': ['temperature_2m', 'weather_code'],
     }
 
     response = requests.get(BASE_URL, params=params)
@@ -144,7 +144,7 @@ def fetch_daily(days):
 
     time_response = data['hourly']['time']
     temp_response = data['hourly']['temperature_2m']
-    precip_response = data['hourly']['precipitation']
+    code_response = data['hourly']['weather_code']
 
     day_names = {0: 'Pon', 1: 'Uto', 2: 'Sri', 3: 'Čet', 4: 'Pet', 5: 'Sub', 6: 'Ned'}
 
@@ -156,7 +156,7 @@ def fetch_daily(days):
 
         day_times = time_response[start:end:2]
         day_temps = temp_response[start:end:2]
-        day_precip = precip_response[start:end:2]
+        day_codes = code_response[start:end:2]
 
         dt = datetime.fromisoformat(time_response[start])
         day_label = day_names[dt.weekday()]
@@ -173,18 +173,12 @@ def fetch_daily(days):
         # Color coded rows
         temp_even = [round(t) for t in day_temps]
         temp_color = [f'[{get_temp_color(t)}]{t}°[/{get_temp_color(t)}]' for t in temp_even]
-        precip_display = []
-        for p in day_precip:
-            color = get_precip_color(p)
-            if color:
-                precip_display.append(f'[{color}]{p:.1f}mm[/{color}]')
-            else:
-                precip_display.append(f'{p:.1f}mm')
+        icons = [weather_icons[c] for c in day_codes]
 
         table = Table(show_header=False, border_style="grey54", show_lines=True, box=box.ROUNDED)
         table.add_row(day_col, *time_display)
         table.add_row('Temp', *temp_color)
-        table.add_row('Kiša', *precip_display)
+        table.add_row('Prog', *icons)
 
         console.print(table)
 
