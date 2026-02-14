@@ -78,7 +78,7 @@ def fetch_summary():
         'longitude': LONGITUDE,
         'timezone': TIMEZONE,
         'forecast_days': 7,
-        'daily': ['temperature_2m_max', 'temperature_2m_min', 'precipitation_sum'],
+        'daily': ['temperature_2m_max', 'temperature_2m_min', 'precipitation_sum', 'weather_code'],
     }
 
     response = requests.get(BASE_URL, params=params)
@@ -88,12 +88,13 @@ def fetch_summary():
     temp_max = data['daily']['temperature_2m_max']
     temp_min = data['daily']['temperature_2m_min']
     precipitation = data['daily']['precipitation_sum']
+    codes = data['daily']['weather_code']
 
     day_names = {0: 'Pon', 1: 'Uto', 2: 'Sri', 3: 'Čet', 4: 'Pet', 5: 'Sub', 6: 'Ned'}
 
     day_labels = []
     temp_display = []
-    precip_display = []
+    weather_display = []
 
     for i, date_str in enumerate(dates):
         dt = datetime.fromisoformat(date_str)
@@ -110,19 +111,20 @@ def fetch_summary():
         lo_color = get_temp_color(lo)
         temp_display.append(f'[{lo_color}]{lo}°[/{lo_color}][white] | [/white][{hi_color}]{hi}°[/{hi_color}]')
 
+        icon = weather_icons[codes[i]]
         rain = precipitation[i]
         color = get_precip_color(rain)
         if color:
-            precip_display.append(f'[{color}]{rain:.1f}mm[/{color}]')
+            weather_display.append(f'{icon} [{color}]{rain:.1f}mm[/{color}]')
         else:
-            precip_display.append(f'{rain:.1f}mm')
+            weather_display.append(f'{icon} [dim]{rain:.1f}mm[/dim]')
 
     table = Table(show_header=False, border_style="grey54", show_lines=True, box=box.ROUNDED)
     for _ in range(7):
         table.add_column(justify="center")
     table.add_row(*day_labels)
     table.add_row(*temp_display)
-    table.add_row(*precip_display)
+    table.add_row(*weather_display)
 
     console.print(table)
 
