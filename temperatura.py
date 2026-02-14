@@ -1,7 +1,11 @@
 import requests
 import time
 from rich import print
-from shared import BASE_URL, LATITUDE, LONGITUDE, TIMEZONE, weather_icons, wind_direction_to_compass
+from shared import (
+    BASE_URL, LATITUDE, LONGITUDE, TIMEZONE,
+    weather_icons, wind_direction_to_compass,
+    get_temp_color, get_humidity_color, get_wind_color,
+)
 
 params = {
     'latitude': LATITUDE,
@@ -22,5 +26,10 @@ wind_direction = wind_direction_to_compass(data['current']['wind_direction_10m']
 
 current_time = time.strftime('%H:%M')
 
-print(f'Zagreb [{current_time}] {weather_icon} [cyan]{temperature}c[/cyan] | '
-      f'Vlaga [cyan]{humidity}%[/cyan] | Vjetar [cyan]{wind_speed}/{wind_gust}[/cyan] km/h [cyan]{wind_direction}[/cyan]\n')
+tc = get_temp_color(temperature)
+hc = get_humidity_color(humidity)
+wc = get_wind_color(wind_speed)
+gc = get_wind_color(wind_gust)
+
+print(f'Zagreb [{current_time}] {weather_icon} [{tc}]{temperature}c[/{tc}] | '
+      f'Vlaga [{hc}]{humidity}%[/{hc}] | Vjetar [{wc}]{wind_speed}[/{wc}]/[{gc}]{wind_gust}[/{gc}] km/h [{wc}]{wind_direction}[/{wc}]\n')
