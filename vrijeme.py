@@ -184,9 +184,9 @@ def fetch_daily(days):
 if mode == "default":
     hourly_table = fetch_hourly()
     summary_table = fetch_summary()
-    console.print("[bold]Danas[/bold]")
+    console.print(" [bold]Danas[/bold]", highlight=False)
     console.print(hourly_table)
-    console.print("[bold]7 Dana[/bold]")
+    console.print(" [bold]7 Dana[/bold]", highlight=False)
     console.print(summary_table)
 elif mode == "full":
     fetch_daily(7)
