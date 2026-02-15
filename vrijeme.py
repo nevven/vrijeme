@@ -11,21 +11,19 @@ from shared import (
 
 console = Console()
 
-# Parse CLI argument: no arg = today hourly, 7 = daily summary, 7f = full hourly per day
-mode = "today"
+# Parse CLI argument: no arg = today + 7-day, 7f = full hourly per day
+mode = "default"
 if len(sys.argv) > 1:
     arg = sys.argv[1]
-    if arg == "7":
-        mode = "summary"
-    elif arg == "7f":
+    if arg == "7f":
         mode = "full"
     else:
-        console.print(f"[red]Invalid argument: {arg}. Use: vrijeme [7|7f][/red]")
+        console.print(f"[red]Invalid argument: {arg}. Use: vrijeme [7f][/red]")
         sys.exit(1)
 
 
 def fetch_hourly():
-    """Fetch and display hourly forecast for today."""
+    """Fetch and return hourly forecast table for today."""
     params = {
         'latitude': LATITUDE,
         'longitude': LONGITUDE,
@@ -60,7 +58,7 @@ def fetch_hourly():
     table.add_row(*temp_color)
     table.add_row(*icons_even)
 
-    console.print(table)
+    return table
 
 
 def get_precip_color(mm):
@@ -72,7 +70,7 @@ def get_precip_color(mm):
 
 
 def fetch_summary():
-    """Fetch and display 7-day summary: one column per day."""
+    """Fetch and return 7-day summary table."""
     params = {
         'latitude': LATITUDE,
         'longitude': LONGITUDE,
@@ -126,7 +124,7 @@ def fetch_summary():
     table.add_row(*temp_display)
     table.add_row(*weather_display)
 
-    console.print(table)
+    return table
 
 
 def fetch_daily(days):
@@ -183,9 +181,12 @@ def fetch_daily(days):
         console.print(table)
 
 
-if mode == "today":
-    fetch_hourly()
-elif mode == "summary":
-    fetch_summary()
+if mode == "default":
+    hourly_table = fetch_hourly()
+    summary_table = fetch_summary()
+    console.print("[bold]Danas[/bold]")
+    console.print(hourly_table)
+    console.print("[bold]7 Dana[/bold]")
+    console.print(summary_table)
 elif mode == "full":
     fetch_daily(7)
