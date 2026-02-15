@@ -55,7 +55,7 @@ def fetch_hourly():
     # Color code values
     temp_color = [f'[{get_temp_color(t)}]{t}°[/{get_temp_color(t)}]' for t in temp_even]
 
-    table = Table(show_header=False, border_style="grey54", show_lines=True, box=box.ROUNDED)
+    table = Table(show_header=False, border_style="grey30", show_lines=True, box=box.ROUNDED)
     table.add_row(*time_display)
     table.add_row(*temp_color)
     table.add_row(*icons_even)
@@ -119,7 +119,7 @@ def fetch_summary():
         else:
             weather_display.append(f'{icon} [dim]{rain:.1f}mm[/dim]')
 
-    table = Table(show_header=False, border_style="grey54", show_lines=True, box=box.ROUNDED)
+    table = Table(show_header=False, border_style="grey30", show_lines=True, box=box.ROUNDED)
     for _ in range(7):
         table.add_column(justify="center")
     table.add_row(*day_labels)
@@ -175,7 +175,7 @@ def fetch_daily(days):
         temp_color = [f'[{get_temp_color(t)}]{t}°[/{get_temp_color(t)}]' for t in temp_even]
         icons = [weather_icons[c] for c in day_codes]
 
-        table = Table(show_header=False, border_style="grey54", show_lines=True, box=box.ROUNDED)
+        table = Table(show_header=False, border_style="grey30", show_lines=True, box=box.ROUNDED)
         table.add_row(day_col, *time_display)
         table.add_row('Temp', *temp_color)
         table.add_row('Prog', *icons)
