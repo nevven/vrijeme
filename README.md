@@ -4,6 +4,10 @@ CLI weather tools for Zagreb using [Open-Meteo API](https://open-meteo.com/).
 
 ## Commands
 
+`temp` — current conditions: temperature, humidity, wind
+
+![temp](images/temperatura.PNG)
+
 `vri` — today's hourly forecast + 7-day summary in a single view
 
 ![vri](images/vri.PNG)
@@ -12,9 +16,6 @@ CLI weather tools for Zagreb using [Open-Meteo API](https://open-meteo.com/).
 
 ![vri 7f](images/vri-7f.PNG)
 
-`temp` — current conditions: temperature, humidity, wind
-
-![temp](images/temperatura.PNG)
 
 ## Setup
 
