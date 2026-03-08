@@ -22,45 +22,6 @@ if len(sys.argv) > 1:
         sys.exit(1)
 
 
-def fetch_hourly():
-    """Fetch and return hourly forecast table for today."""
-    params = {
-        'latitude': LATITUDE,
-        'longitude': LONGITUDE,
-        'timezone': TIMEZONE,
-        'forecast_days': 1,
-        'hourly': ['temperature_2m', 'weather_code'],
-    }
-
-    response = requests.get(BASE_URL, params=params)
-    data = response.json()
-
-    time_response = data['hourly']['time']
-    temp_response = data['hourly']['temperature_2m']
-    code_response = data['hourly']['weather_code']
-
-    # Every other hour
-    time_even_display = [datetime.fromisoformat(i).strftime('%H:%M') for i in time_response[::2]]
-    time_even_dt = [datetime.fromisoformat(i) for i in time_response[::2]]
-    temp_even = [round(i) for i in temp_response[::2]]
-    icons_even = [weather_icons[c] for c in code_response[::2]]
-
-    # Highlight closest time slot
-    now = datetime.now()
-    time_min_difference = min(time_even_dt, key=lambda t: abs(now - t)).strftime('%H:%M')
-    time_display = [f'[green]{t}[/green]' if t == time_min_difference else t for t in time_even_display]
-
-    # Color code values
-    temp_color = [f'[{get_temp_color(t)}]{t}°[/{get_temp_color(t)}]' for t in temp_even]
-
-    table = Table(show_header=False, border_style="grey30", show_lines=True, box=box.ROUNDED)
-    table.add_row(*time_display)
-    table.add_row(*temp_color)
-    table.add_row(*icons_even)
-
-    return table
-
-
 def get_precip_color(mm):
     if mm >= 5:
         return "dodger_blue2"
@@ -69,19 +30,41 @@ def get_precip_color(mm):
     return None
 
 
-def fetch_summary():
-    """Fetch and return 7-day summary table."""
+def fetch_default():
+    """Fetch hourly (today) and 7-day summary in a single API call."""
     params = {
         'latitude': LATITUDE,
         'longitude': LONGITUDE,
         'timezone': TIMEZONE,
         'forecast_days': 7,
+        'hourly': ['temperature_2m', 'weather_code'],
         'daily': ['temperature_2m_max', 'temperature_2m_min', 'precipitation_sum', 'weather_code'],
     }
 
     response = requests.get(BASE_URL, params=params)
     data = response.json()
 
+    # --- Hourly table (today only: first 24 hours) ---
+    time_response = data['hourly']['time'][:24]
+    temp_response = data['hourly']['temperature_2m'][:24]
+    code_response = data['hourly']['weather_code'][:24]
+
+    time_even_display = [datetime.fromisoformat(i).strftime('%H:%M') for i in time_response[::2]]
+    time_even_dt = [datetime.fromisoformat(i) for i in time_response[::2]]
+    temp_even = [round(i) for i in temp_response[::2]]
+    icons_even = [weather_icons[c] for c in code_response[::2]]
+
+    now = datetime.now()
+    time_min_difference = min(time_even_dt, key=lambda t: abs(now - t)).strftime('%H:%M')
+    time_display = [f'[green]{t}[/green]' if t == time_min_difference else t for t in time_even_display]
+    temp_color = [f'[{get_temp_color(t)}]{t}°[/{get_temp_color(t)}]' for t in temp_even]
+
+    hourly_table = Table(show_header=False, border_style="grey30", show_lines=True, box=box.ROUNDED)
+    hourly_table.add_row(*time_display)
+    hourly_table.add_row(*temp_color)
+    hourly_table.add_row(*icons_even)
+
+    # --- 7-day summary table ---
     dates = data['daily']['time']
     temp_max = data['daily']['temperature_2m_max']
     temp_min = data['daily']['temperature_2m_min']
@@ -117,14 +100,14 @@ def fetch_summary():
         else:
             weather_display.append(f'{icon} [dim]{rain:.1f}mm[/dim]')
 
-    table = Table(show_header=False, border_style="grey30", show_lines=True, box=box.ROUNDED)
+    summary_table = Table(show_header=False, border_style="grey30", show_lines=True, box=box.ROUNDED)
     for _ in range(7):
-        table.add_column(justify="center")
-    table.add_row(*day_labels)
-    table.add_row(*temp_display)
-    table.add_row(*weather_display)
+        summary_table.add_column(justify="center")
+    summary_table.add_row(*day_labels)
+    summary_table.add_row(*temp_display)
+    summary_table.add_row(*weather_display)
 
-    return table
+    return hourly_table, summary_table
 
 
 def fetch_daily(days):
@@ -182,8 +165,7 @@ def fetch_daily(days):
 
 
 if mode == "default":
-    hourly_table = fetch_hourly()
-    summary_table = fetch_summary()
+    hourly_table, summary_table = fetch_default()
     console.print(" [bold]Danas[/bold]", highlight=False)
     console.print(hourly_table)
     console.print(" [bold]7 Dana[/bold]", highlight=False)
