@@ -1,6 +1,6 @@
 # Vrijeme
 
-CLI weather tools for Zagreb using [Open-Meteo API](https://open-meteo.com/).
+CLI weather tools for Zagreb using [Open-Meteo API](https://open-meteo.com/)
 
 ## Commands
 
