@@ -14,8 +14,15 @@ params = {
     'current': ['temperature_2m', 'weather_code', 'relative_humidity_2m', 'wind_speed_10m', 'wind_gusts_10m', 'wind_direction_10m'],
 }
 
-response = requests.get(BASE_URL, params=params)
-data = response.json()
+try:
+    response = requests.get(BASE_URL, params=params)
+    response.raise_for_status() # checks for HTTP errors
+    data = response.json()
+except requests.exceptions.RequestException as e:
+    print(f'error occured: {e}')
+    raise
+
+
 
 temperature = round(data['current']['temperature_2m'])
 weather_icon = weather_icons[data['current']['weather_code']]
