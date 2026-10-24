@@ -1,5 +1,6 @@
 import requests
 import time
+from datetime import datetime, timedelta
 from rich import print
 from shared import (
     BASE_URL, LATITUDE, LONGITUDE, TIMEZONE,
@@ -12,6 +13,8 @@ params = {
     'longitude': LONGITUDE,
     'timezone': TIMEZONE,
     'current': ['temperature_2m', 'weather_code', 'relative_humidity_2m', 'wind_speed_10m', 'wind_gusts_10m', 'wind_direction_10m'],
+    'daily': ['sunrise', 'sunset']
+    
 }
 
 try:
@@ -22,6 +25,13 @@ except requests.exceptions.RequestException as e:
     print(f'error occured: {e}')
     raise
 
+def sun_rs(sunrises, sunsets):
+    sunrise_today = datetime.fromisoformat(sunrises[0])
+    sunset_today = datetime.fromisoformat(sunsets[0])
+    d = sunset_today - sunrise_today
+    hours, minutes = divmod(int(d.total_seconds() // 60), 60)
+    return sunrise_today.strftime('%H:%M'), sunset_today.strftime('%H:%M'), f'{hours:02d}:{minutes:02d}'
+
 
 
 temperature = round(data['current']['temperature_2m'])
@@ -30,6 +40,9 @@ humidity = data['current']['relative_humidity_2m']
 wind_speed = data['current']['wind_speed_10m']
 wind_gust = data['current']['wind_gusts_10m']
 wind_direction = wind_direction_to_compass(data['current']['wind_direction_10m'])
+sunrise = data['daily']['sunrise']
+sunset = data['daily']['sunset']
+sunrise_time, sunset_time, day_length = sun_rs(sunrise, sunset)
 
 current_time = time.strftime('%H:%M')
 
@@ -39,4 +52,5 @@ wc = get_wind_color(wind_speed)
 gc = get_wind_color(wind_gust)
 
 print(f'Zagreb [{current_time}] {weather_icon} [{tc}]{temperature}c[/{tc}] | '
-      f'Vlaga [{hc}]{humidity}%[/{hc}] | Vjetar [{wc}]{wind_speed}[/{wc}]/[{gc}]{wind_gust}[/{gc}] km/h [{wc}]{wind_direction}[/{wc}]\n')
+      f'Vlaga [{hc}]{humidity}%[/{hc}] | Vjetar [{wc}]{wind_speed}[/{wc}]/[{gc}]{wind_gust}[/{gc}] km/h [{wc}]{wind_direction}[/{wc}] | '
+      f'Dan traje {day_length} {sunrise_time}/{sunset_time}\n')
