@@ -36,4 +36,4 @@ alias temp='uv run ~/path/to/temperatura.py'
 ## Planned
 
 - [x] Combine API calls into a single request to reduce latency
-- [ ] Sunrise/sunset display between today and 7-day tables
+- [x] Sunrise/sunset display
